@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'db_connect.php';
+include 'config.php';
 
 if (!defined('DEBUG')) {
     define('DEBUG', true);

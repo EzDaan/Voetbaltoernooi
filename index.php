@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'db_connect.php';
+include 'config.php';
 
 // Default application constants (define if not already defined)
 if (!defined('ROLE_ADMIN')) {

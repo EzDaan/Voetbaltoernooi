@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'db_connect.php';
+include 'config.php';
 
 // Fallback definitions in case config.php doesn't define these constants
 if (!defined('ROLE_BEZOEKER')) {

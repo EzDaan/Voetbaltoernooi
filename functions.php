@@ -1,6 +1,6 @@
 <?php
 // Bestand: functions.php
-require_once 'db_connect.php'; // Zorg ervoor dat $pdo beschikbaar is
+require_once 'config.php'; // Zorg ervoor dat $pdo beschikbaar is
 
 function voegTeamToe(string $naam) {
     global $pdo;
