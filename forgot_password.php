@@ -26,40 +26,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if (!empty($email)) {
         try {
-            // Probeer gebruikers in 'users' tabel te vinden
-            $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
+            // Zoek gebruiker in 'spelers' tabel
+            $stmt = $pdo->prepare("SELECT SpelerID AS id, Email AS email FROM spelers WHERE Email = ?");
             $stmt->execute([$email]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
-            
+
             if ($user) {
-                // 2. Genereer token en bewaartijd (1 uur)
-                $token = generate_token();
-                $expiry = date("Y-m-d H:i:s", time() + 3600); 
-                
-                $stmt = $pdo->prepare("UPDATE users SET reset_token = ?, reset_expiry = ? WHERE id = ?");
-                $stmt->execute([$token, $expiry, $user['id']]);
-                
-                $reset_link = "http://jouwdomein.nl/reset_password.php?token=" . $token;
-                $message = "Als dit e-mailadres bestaat, is er een link om je wachtwoord te herstellen naar je e-mail verzonden. (Debug Link: <a href=\"reset_password.php?token={$token}\" class='reset-link'>{$token}</a>)";
+                // Zorg dat table password_resets bestaat (lichtere aanpak dan spelers wijzigen)
+                $createSql = "CREATE TABLE IF NOT EXISTS password_resets (  
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    email VARCHAR(255) NOT NULL,
+                    token VARCHAR(128) NOT NULL,
+                    expiry DATETIME NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+                $pdo->exec($createSql);
+
+                // Genereer token en insert
+                $token = generate_token(16);
+                $expiry = date("Y-m-d H:i:s", time() + 3600);
+                $ins = $pdo->prepare("INSERT INTO password_resets (email, token, expiry) VALUES (?, ?, ?)");
+                $ins->execute([$user['email'], $token, $expiry]);
+
+                $reset_link = "reset_password.php?token=" . $token;
+                $message = "Als dit e-mailadres bestaat, is er een link om je wachtwoord te herstellen naar je e-mail verzonden. (Debug Link: <a href=\"{$reset_link}\" class='reset-link'>{$token}</a>)";
                 $message_type = "success";
             } else {
+                // Altijd dezelfde melding om geen info te lekken
                 $message = "Als dit e-mailadres bestaat, is er een link om je wachtwoord te herstellen naar je e-mail verzonden.";
                 $message_type = "success";
             }
         } catch (PDOException $e) {
-            // Als 'users' tabel niet bestaat, bieden we user-friendly melding maar geen echte reset
-            if ($e->getCode() === '42S02') {
-                $message = "Als dit e-mailadres bestaat, is er een link om je wachtwoord te herstellen naar je e-mail verzonden.";
-                $message_type = "success";
-                if (defined('DEBUG') && DEBUG) {
-                    $message .= "<br><small>DEBUG: password-reset niet ondersteund voor huidige DB-structuur (geen 'users' tabel).</small>";
-                }
-            } else {
-                $message = "Er is een fout opgetreden bij het verwerken van de aanvraag.";
-                $message_type = "error";
-                if (defined('DEBUG') && DEBUG) {
-                    $message .= " (" . htmlspecialchars($e->getMessage()) . ")";
-                }
+            $message = "Er is een fout opgetreden bij het verwerken van de aanvraag.";
+            $message_type = "error";
+            if (defined('DEBUG') && DEBUG) {
+                $message .= " (" . htmlspecialchars($e->getMessage()) . ")";
             }
         }
     } else {
