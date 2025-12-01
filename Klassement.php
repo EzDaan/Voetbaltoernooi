@@ -1,5 +1,6 @@
 <?php
 require_once 'functions.php';
+include 'header.php';
 
 $klassement = getKlassement();
 ?>

@@ -156,3 +156,39 @@ function getKlassement() {
     $stmt = $pdo->query($sql);
     return $stmt->fetchAll();
 }
+
+// Sessie-hulpfunctie: controleer of gebruiker ingelogd is
+function isLoggedIn(): bool {
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    return !empty($_SESSION['user_id']);
+}
+
+// Log de huidige gebruiker uit: vernietig sessie en verwijder cookie
+function logout(): void {
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    // Maak alle sessie-variabelen leeg
+    $_SESSION = [];
+
+    // Verwijder session cookie indien aanwezig
+    if (ini_get('session.use_cookies')) {
+        $params = session_get_cookie_params();
+        setcookie(session_name(), '', time() - 42000,
+            $params['path'], $params['domain'], $params['secure'], $params['httponly']
+        );
+    }
+
+    // Vernietig de sessie
+    session_destroy();
+
+    // Verwijder eventueel 'remember me' cookie
+    setcookie('user_email', '', time() - 3600, '/');
+
+    // Stuur terug naar inlogpagina
+    header('Location: index.php');
+    exit();
+}

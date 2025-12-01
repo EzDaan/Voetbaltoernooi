@@ -1,5 +1,6 @@
 <?php
 require_once 'functions.php';
+include 'header.php';
 
 $feedback = '';
 // Haal wedstrijden op die nog niet gespeeld zijn OF wel, maar nog geen score hebben
