@@ -71,24 +71,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // Probeer de mail te verzenden. Op XAMPP/Windows is mail() vaak niet geconfigureerd.
                 $mail_sent = false;
-                try {
-                    $mail_sent = mail($to, $subject, $body_html, $headers);
-                } catch (Exception $e) {
-                    $mail_sent = false;
+                if (function_exists('mail')) {
+                    @$mail_sent = mail($to, $subject, $body_html, $headers);
                 }
 
-                if ($mail_sent) {
-                    $message = "Als dit e-mailadres bestaat, is er een link om je wachtwoord te herstellen naar je e-mail verzonden.";
-                    $message_type = "success";
-                } else {
-                    // Als mail niet kon verzenden, toon generieke melding maar geef debug-link bij DEBUG
-                    $message = "Als dit e-mailadres bestaat, is er een link om je wachtwoord te herstellen naar je e-mail verzonden.";
-                    if (defined('DEBUG') && DEBUG) {
-                        $message .= " (Debug Link: <a href=\"{$reset_link}\" class='reset-link'>Reset link</a>)";
-                    }
-                    $message_type = "success";
-                    // Opmerking: als je betrouwbare mail wilt, gebruik PHPMailer/SMTP. Zie opmerking onderaan bestand.
-                }
+                // Toon bericht
+                $message = "Als dit e-mailadres bestaat, is er een link om je wachtwoord te herstellen naar je e-mail verzonden.";
+                $message_type = "success";
+                
             } else {
                 // Altijd dezelfde melding om geen info te lekken
                 $message = "Als dit e-mailadres bestaat, is er een link om je wachtwoord te herstellen naar je e-mail verzonden.";
