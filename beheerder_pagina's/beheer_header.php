@@ -2,7 +2,7 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once 'functions.php';
+require_once '../functions.php';
 ?>
 <!DOCTYPE html>
 <html lang="nl">
@@ -21,14 +21,15 @@ require_once 'functions.php';
 <body>
     <div class="topbar">
         <div class="nav">
-            <a href="Team_inschrijven.php">Team inschrijven</a>
-            <a href="Teams_bekijken.php">Teams</a>
+            <a href="dashboard.php">Dashboard</a>
+            <a href="Wedstrijd_Plannen.php">Wedstrijdplanning</a>
+            <a href="dashboard.php">Uitslagen</a>
         </div>
         <div>
             <?php if (function_exists('isLoggedIn') && isLoggedIn()): ?>
-                <a href="logout.php" class="logout-button">Uitloggen</a>
+                <a href="../logout.php" class="logout-button">Uitloggen</a>
             <?php else: ?>
-                <a href="inloggen.php">Inloggen</a>
+                <a href="../index.php">Inloggen</a>
             <?php endif; ?>
         </div>
     </div>

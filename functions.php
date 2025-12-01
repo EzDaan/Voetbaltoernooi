@@ -164,28 +164,29 @@ function getKlassement() {
     global $pdo;
     $sql = "
         SELECT
+            t.TeamID,
             t.Naam AS Teamnaam,
-            COUNT(u.WedstrijdID) AS Gespeeld,
+            COUNT(DISTINCT CASE WHEN u.WedstrijdID IS NOT NULL THEN u.WedstrijdID END) AS Gespeeld,
             SUM(CASE 
                 WHEN (u.ScoreThuis > u.ScoreUit AND t.TeamID = w.TeamThuisID) OR (u.ScoreUit > u.ScoreThuis AND t.TeamID = w.TeamUitID) THEN 1 
                 ELSE 0 END) AS Winsten,
-            SUM(CASE WHEN u.Gelijkspel = TRUE THEN 1 ELSE 0 END) AS Gelijkspelen,
+            SUM(CASE WHEN u.Gelijkspel = 1 THEN 1 ELSE 0 END) AS Gelijkspelen,
             SUM(CASE 
                 WHEN (u.ScoreThuis < u.ScoreUit AND t.TeamID = w.TeamThuisID) OR (u.ScoreUit < u.ScoreThuis AND t.TeamID = w.TeamUitID) THEN 1 
                 ELSE 0 END) AS Verliezen,
-            SUM(CASE WHEN t.TeamID = w.TeamThuisID THEN u.ScoreThuis ELSE u.ScoreUit END) AS DoelpuntenVoor,
-            SUM(CASE WHEN t.TeamID = w.TeamThuisID THEN u.ScoreUit ELSE u.ScoreThuis END) AS DoelpuntenTegen,
-            SUM(CASE WHEN u.Gelijkspel = TRUE THEN 1 ELSE 
-                CASE WHEN (u.ScoreThuis > u.ScoreUit AND t.TeamID = w.TeamThuisID) OR (u.ScoreUit > u.ScoreThuis AND t.TeamID = w.TeamUitID) THEN 3 ELSE 0 END 
-            END) AS Score
+            SUM(CASE WHEN t.TeamID = w.TeamThuisID THEN COALESCE(u.ScoreThuis, 0) ELSE COALESCE(u.ScoreUit, 0) END) AS DoelpuntenVoor,
+            SUM(CASE WHEN t.TeamID = w.TeamThuisID THEN COALESCE(u.ScoreUit, 0) ELSE COALESCE(u.ScoreThuis, 0) END) AS DoelpuntenTegen,
+            SUM(CASE WHEN u.Gelijkspel = 1 THEN 1 
+                WHEN (u.ScoreThuis > u.ScoreUit AND t.TeamID = w.TeamThuisID) OR (u.ScoreUit > u.ScoreThuis AND t.TeamID = w.TeamUitID) THEN 3 
+                ELSE 0 END) AS Score
         FROM
             Teams t
         LEFT JOIN Wedstrijden w ON t.TeamID = w.TeamThuisID OR t.TeamID = w.TeamUitID
-        LEFT JOIN Uitslagen u ON w.WedstrijdID = u.WedstrijdID
+        LEFT JOIN Uitslagen u ON w.WedstrijdID = u.WedstrijdID AND w.Status = 'Gespeeld'
         GROUP BY
             t.TeamID, t.Naam
         ORDER BY
-            Score DESC, (DoelpuntenVoor - DoelpuntenTegen) DESC, DoelpuntenVoor DESC, t.Naam ASC
+            Score DESC, DoelpuntenVoor DESC, t.Naam ASC
     ";
     $stmt = $pdo->query($sql);
     return $stmt->fetchAll();

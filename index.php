@@ -90,9 +90,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 setcookie('user_email', '', time() - 3600, "/");
             }
 
-            // Doorsturen op basis van de rol: normale gebruikers gaan naar Team_inschrijven.php
+            // Doorsturen op basis van de rol: admins gaan naar beheerder pagina's
             if ($user['role'] === ROLE_ADMIN) {
-                header("Location: " . ADMIN_PAGE);
+                header("Location: beheerder_pagina's/dashboard.php");
             } else {
                 header("Location: Team_inschrijven.php");
             }

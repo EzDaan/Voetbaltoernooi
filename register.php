@@ -27,7 +27,11 @@ if (!defined('DEBUG')) {
 
 // Als gebruiker al ingelogd is, doorsturen naar de juiste pagina
 if (isset($_SESSION['user_role'])) {
-    header("Location: " . ($_SESSION['user_role'] === ROLE_ADMIN ? ADMIN_PAGE : HOME_PAGE));
+    if ($_SESSION['user_role'] === ROLE_ADMIN) {
+        header("Location: beheerder_pagina's/dashboard.php");
+    } else {
+        header("Location: Team_inschrijven.php");
+    }
     exit();
 }
 
