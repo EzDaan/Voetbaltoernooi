@@ -48,9 +48,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $ins = $pdo->prepare("INSERT INTO password_resets (email, token, expiry) VALUES (?, ?, ?)");
                 $ins->execute([$user['email'], $token, $expiry]);
 
-                $reset_link = "reset_password.php?token=" . $token;
-                $message = "Als dit e-mailadres bestaat, is er een link om je wachtwoord te herstellen naar je e-mail verzonden. (Debug Link: <a href=\"{$reset_link}\" class='reset-link'>{$token}</a>)";
-                $message_type = "success";
+                // Bouw een absolute reset-link
+                $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+                $host = $_SERVER['HTTP_HOST'];
+                $basePath = rtrim(dirname($_SERVER['REQUEST_URI']), "/\\");
+                $reset_link = $protocol . '://' . $host . $basePath . '/reset_password.php?token=' . $token;
+
+                // Bereid e-mail voor
+                $to = $user['email'];
+                $subject = 'Wachtwoord resetten - Voetbaltoernooi';
+                $body_html = '<p>Je ontving deze e-mail omdat er een verzoek is ingediend om je wachtwoord te resetten.</p>';
+                $body_html .= '<p>Klik op de volgende link om je wachtwoord te resetten (geldig 1 uur):</p>';
+                $body_html .= '<p><a href="' . htmlspecialchars($reset_link) . '">Wachtwoord resetten</a></p>';
+                $body_html .= '<p>Als je geen verzoek hebt gedaan, negeer deze e-mail.</p>';
+                $body_plain = "Ga naar de volgende link om je wachtwoord te resetten: " . $reset_link;
+
+                // From adres (pas aan indien gewenst)
+                $from = 'no-reply@' . $host;
+                $headers = "MIME-Version: 1.0\r\n";
+                $headers .= "Content-type: text/html; charset=utf-8\r\n";
+                $headers .= "From: \"Voetbaltoernooi\" <{$from}>\r\n";
+
+                // Probeer de mail te verzenden. Op XAMPP/Windows is mail() vaak niet geconfigureerd.
+                $mail_sent = false;
+                try {
+                    $mail_sent = mail($to, $subject, $body_html, $headers);
+                } catch (Exception $e) {
+                    $mail_sent = false;
+                }
+
+                if ($mail_sent) {
+                    $message = "Als dit e-mailadres bestaat, is er een link om je wachtwoord te herstellen naar je e-mail verzonden.";
+                    $message_type = "success";
+                } else {
+                    // Als mail niet kon verzenden, toon generieke melding maar geef debug-link bij DEBUG
+                    $message = "Als dit e-mailadres bestaat, is er een link om je wachtwoord te herstellen naar je e-mail verzonden.";
+                    if (defined('DEBUG') && DEBUG) {
+                        $message .= " (Debug Link: <a href=\"{$reset_link}\" class='reset-link'>Reset link</a>)";
+                    }
+                    $message_type = "success";
+                    // Opmerking: als je betrouwbare mail wilt, gebruik PHPMailer/SMTP. Zie opmerking onderaan bestand.
+                }
             } else {
                 // Altijd dezelfde melding om geen info te lekken
                 $message = "Als dit e-mailadres bestaat, is er een link om je wachtwoord te herstellen naar je e-mail verzonden.";

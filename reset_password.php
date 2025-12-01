@@ -99,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button type="submit">Wachtwoord resetten</button>
     </form>
     <?php else: ?>
-        <p><a href="inloggen.php">Inloggen</a></p>
+        <p><a href="index.php">Inloggen</a></p>
     <?php endif; ?>
 </div>
 </body>
