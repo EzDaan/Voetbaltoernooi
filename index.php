@@ -206,14 +206,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .reset-pass {
             display: block;
             margin-top: 15px;
-            color: #94a3b8;
+            color: #3b82f6;
             text-decoration: none;
             font-size: 0.9rem;
             transition: color 0.3s;
         }
-        .reset-pass:hover {
-            color: #3b82f6;
-        }
+
         .message {
             margin-top: 20px;
             padding: 10px;
