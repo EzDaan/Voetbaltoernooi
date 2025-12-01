@@ -243,7 +243,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
             
             <div class="form-switch">
-                Terug naar <a href="login.php">Inloggen</a>
+                Terug naar <a href="index.php">Inloggen</a>
             </div>
         </div>
     </div>
