@@ -2,6 +2,14 @@
 // Bestand: functions.php
 require_once 'config.php'; // Zorg ervoor dat $pdo beschikbaar is
 
+// Hulp: laatste DB-fout opslaan voor debug-doeleinden
+$lastDbError = null;
+
+function getLastDbError() {
+    global $lastDbError;
+    return $lastDbError;
+}
+
 function voegTeamToe(string $naam) {
     global $pdo;
     $sql = "INSERT INTO Teams (Naam) VALUES (?)";
@@ -13,24 +21,50 @@ function voegTeamToe(string $naam) {
         return false;
     } catch (\PDOException $e) {
         // Bijv. unieke naam constraint overtreden
+        global $lastDbError;
+        $lastDbError = $e->getMessage();
         return false;
     }
 }
 
 function voegSpelerToe(array $data) {
     global $pdo;
-    $sql = "INSERT INTO Spelers (TeamID, Voornaam, Achternaam, Telefoonnummer, Email) VALUES (:team_id, :voornaam, :achternaam, :telefoon, :email)";
+    // Probeer eerst te zien of een speler met hetzelfde e-mailadres al bestaat
     try {
-        $stmt = $pdo->prepare($sql);
-        return $stmt->execute([
-            'team_id' => $data['TeamID'],
-            'voornaam' => $data['Voornaam'],
-            'achternaam' => $data['Achternaam'],
-            'telefoon' => $data['Telefoonnummer'],
-            'email' => $data['Email']
-        ]);
+        $check = $pdo->prepare("SELECT SpelerID FROM Spelers WHERE Email = ? LIMIT 1");
+        $check->execute([$data['Email']]);
+        $existing = $check->fetch(PDO::FETCH_ASSOC);
+
+        if ($existing) {
+            // Bestaande speler: update TeamID en overige velden zodat speler aan dit team gekoppeld wordt
+            $sqlUpdate = "UPDATE Spelers SET TeamID = :team_id, Voornaam = :voornaam, Achternaam = :achternaam, Telefoonnummer = :telefoon WHERE SpelerID = :id";
+            $stmtUpdate = $pdo->prepare($sqlUpdate);
+            $ok = $stmtUpdate->execute([
+                'team_id' => $data['TeamID'],
+                'voornaam' => $data['Voornaam'],
+                'achternaam' => $data['Achternaam'],
+                'telefoon' => $data['Telefoonnummer'],
+                'id' => $existing['SpelerID']
+            ]);
+            return $ok ? (int)$existing['SpelerID'] : false;
+        } else {
+            $sql = "INSERT INTO Spelers (TeamID, Voornaam, Achternaam, Telefoonnummer, Email) VALUES (:team_id, :voornaam, :achternaam, :telefoon, :email)";
+            $stmt = $pdo->prepare($sql);
+            $ok = $stmt->execute([
+                'team_id' => $data['TeamID'],
+                'voornaam' => $data['Voornaam'],
+                'achternaam' => $data['Achternaam'],
+                'telefoon' => $data['Telefoonnummer'],
+                'email' => $data['Email']
+            ]);
+            if ($ok) {
+                return (int)$pdo->lastInsertId();
+            }
+            return false;
+        }
     } catch (\PDOException $e) {
-        // Bijv. unieke e-mail constraint overtreden
+        global $lastDbError;
+        $lastDbError = $e->getMessage();
         return false;
     }
 }

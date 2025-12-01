@@ -4,6 +4,29 @@ include 'header.php';
 
 $feedback = '';
 
+// Prefill with logged-in gebruiker indien beschikbaar
+$prefill = [
+    'Voornaam' => '',
+    'Achternaam' => '',
+    'Telefoonnummer' => '',
+    'Email' => ''
+];
+if (function_exists('isLoggedIn') && isLoggedIn() && !empty($_SESSION['user_email'])) {
+    try {
+        $stmt = $pdo->prepare("SELECT Voornaam, Achternaam, Telefoonnummer, Email FROM Spelers WHERE Email = ? LIMIT 1");
+        $stmt->execute([$_SESSION['user_email']]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row) {
+            $prefill = $row;
+        } else {
+            // Als gebruiker niet in spelers-tabel staat, probeer e-mail uit sessie vullen
+            $prefill['Email'] = $_SESSION['user_email'];
+        }
+    } catch (PDOException $e) {
+        // negeren; prefill blijft leeg
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registreer'])) {
     $teamNaam = trim($_POST['teamnaam'] ?? '');
     if ($teamNaam === '') {
@@ -20,6 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registreer'])) {
             $added = 0;
             $failed = 0;
             $errors = [];
+            $contactSpelerID = null;
 
             // Loop over entries by index
             $count = max(count($voornamen), count($emails), count($achternamen), count($telefoons));
@@ -49,11 +73,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registreer'])) {
                     'Email' => $e
                 ];
 
-                if (voegSpelerToe($spelerData)) {
+                $spelerId = voegSpelerToe($spelerData);
+                if ($spelerId !== false && $spelerId !== null) {
                     $added++;
+                    // Als dit de eerste rij is (aanmelder), onthoud als contactpersoon
+                    if ($i === 0) {
+                        $contactSpelerID = $spelerId;
+                    }
                 } else {
                     $failed++;
-                    $errors[] = "Kon speler '{$e}' niet toevoegen (mogelijk bestaat e-mailadres al).";
+                    $errMsg = '';
+                    if (defined('DEBUG') && DEBUG) {
+                        $errMsg = ' (' . getLastDbError() . ')';
+                    }
+                    $errors[] = "Kon speler '{$e}' niet toevoegen (mogelijk bestaat e-mailadres al)." . $errMsg;
                 }
             }
 
@@ -64,6 +97,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registreer'])) {
             }
             if (!empty($errors) && defined('DEBUG') && DEBUG) {
                 $feedback .= ' Fouten: ' . implode(' | ', $errors);
+            }
+            // Als we een contactpersoon-ID hebben gekregen, werk die dan in de Teams tabel bij
+            if ($contactSpelerID !== null) {
+                try {
+                    $up = $pdo->prepare("UPDATE Teams SET ContactPersoonID = ? WHERE TeamID = ?");
+                    $up->execute([$contactSpelerID, $teamID]);
+                } catch (PDOException $e) {
+                    if (defined('DEBUG') && DEBUG) {
+                        $feedback .= ' (Kon contactpersoon niet instellen: ' . htmlspecialchars($e->getMessage()) . ')';
+                    }
+                }
             }
         } else {
             $feedback = "Fout: Team kon niet worden ingeschreven (bestaat de naam al?).";
@@ -80,10 +124,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registreer'])) {
     <div id="spelers-container">
         <!-- Eén initiële speler-rij -->
         <div class="speler-row">
-            <input type="text" name="voornaam[]" placeholder="Voornaam" required>
-            <input type="text" name="achternaam[]" placeholder="Achternaam">
-            <input type="tel" name="telefoonnummer[]" placeholder="Telefoonnummer">
-            <input type="email" name="email[]" placeholder="E-mail" required>
+            <input type="text" name="voornaam[]" placeholder="Voornaam" required value="<?php echo htmlspecialchars($prefill['Voornaam'] ?? ''); ?>">
+            <input type="text" name="achternaam[]" placeholder="Achternaam" value="<?php echo htmlspecialchars($prefill['Achternaam'] ?? ''); ?>">
+            <input type="tel" name="telefoonnummer[]" placeholder="Telefoonnummer" value="<?php echo htmlspecialchars($prefill['Telefoonnummer'] ?? ''); ?>">
+            <input type="email" name="email[]" placeholder="E-mail" required value="<?php echo htmlspecialchars($prefill['Email'] ?? ''); ?>">
             <button type="button" class="remove-player" onclick="removePlayer(this)">Verwijder</button>
         </div>
     </div>
@@ -93,13 +137,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registreer'])) {
     </p>
 
     <button name="registreer">Team en spelers inschrijven</button>
+
+    <!-- Contactpersoon velden (voor backend / notificaties) -->
+    <input type="hidden" name="contact_voornaam" value="<?php echo htmlspecialchars($prefill['Voornaam'] ?? ''); ?>">
+    <input type="hidden" name="contact_achternaam" value="<?php echo htmlspecialchars($prefill['Achternaam'] ?? ''); ?>">
+    <input type="hidden" name="contact_telefoon" value="<?php echo htmlspecialchars($prefill['Telefoonnummer'] ?? ''); ?>">
+    <input type="hidden" name="contact_email" value="<?php echo htmlspecialchars($prefill['Email'] ?? ''); ?>">
 </form>
 
 <script>
 // Eenvoudige JS om meerdere spelers toe te voegen/verwijderen
 function removePlayer(btn) {
     const row = btn.closest('.speler-row');
-    const container = document.getElementById(' spelers-container');
+    const container = document.getElementById('spelers-container');
     if (!row) return;
     // Laat minimaal één rij over
     if (container.querySelectorAll('.speler-row').length > 1) {
