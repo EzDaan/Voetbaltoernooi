@@ -23,7 +23,7 @@ require_once '../functions.php';
         <div class="nav">
             <a href="dashboard.php">Dashboard</a>
             <a href="Wedstrijd_Plannen.php">Wedstrijdplanning</a>
-            <a href="dashboard.php">Uitslagen</a>
+            <a href="Uitslagen_Invoeren.php">Uitslagen invoeren</a>
         </div>
         <div>
             <?php if (function_exists('isLoggedIn') && isLoggedIn()): ?>

@@ -23,6 +23,8 @@ require_once 'functions.php';
         <div class="nav">
             <a href="Team_inschrijven.php">Team inschrijven</a>
             <a href="Teams_bekijken.php">Teams</a>
+            <a href="Wedstrijd_Planning.php">Wedstrijd planning</a>
+            <a href="Klassement.php">Klassement</a>
         </div>
         <div>
             <?php if (function_exists('isLoggedIn') && isLoggedIn()): ?>
