@@ -108,7 +108,6 @@ $klassement = getKlassement();
                         <td>
                             <div class="action-links">
                                 <a href="#">Details</a>
-                                <a href="#">Bewerken</a>
                             </div>
                         </td>
                     </tr>
