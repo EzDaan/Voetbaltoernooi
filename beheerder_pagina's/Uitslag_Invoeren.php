@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uitslag_toevoegen']))
     if ($wedstrijdId <= 0 || $scoreThuis === null || $scoreUit === null) {
         $feedback = 'Fout: controleer geselecteerde wedstrijd en scores.';
     } else {
-        // Zoek wedstrijd (type-veilig vergelijken)
+        // Zoek wedstrijd (type-veilig vergelijken.)
         $found = null;
         foreach ($openWedstrijden as $w) {
             if ((int)$w['WedstrijdID'] === $wedstrijdId) {
