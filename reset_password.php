@@ -66,25 +66,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Wachtwoord resetten</title>
-    <style>
-        *{box-sizing:border-box;font-family:Inter, sans-serif}
-        body{background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0}
-        .card{background:rgba(255,255,255,0.05);padding:24px;border-radius:10px;width:360px;color:#f8fafc}
-        input{width:100%;padding:10px;border-radius:8px;border:1px solid #475569;background:#1e293b;color:#f8fafc;margin-bottom:12px}
-        button{width:100%;padding:10px;border-radius:8px;border:none;background:#3b82f6;color:#fff}
-        .message{padding:10px;border-radius:6px;margin-bottom:12px}
-        .message.success{background:#16a34a;color:#fff}
-        .message.error{background:#dc2626;color:#fff}
-        a{color:#60a5fa}
-    </style>
-</head>
-<body>
+<?php include 'header.php'; ?>
+
+<script>document.addEventListener('DOMContentLoaded', function(){ document.body.classList.add('auth-bg'); });</script>
+
 <div class="card">
     <h2>Reset wachtwoord</h2>
     <?php if (!empty($message)): ?>
@@ -102,5 +87,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p><a href="index.php">Inloggen</a></p>
     <?php endif; ?>
 </div>
-</body>
-</html>

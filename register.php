@@ -123,124 +123,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $signup_message_type = "error";
     }
 }
+
+include 'header.php';
 ?>
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aanmelden</title>
-    <!-- Gebruik dezelfde mooie stijl als login.php -->
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
-        body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .auth-container {
-            width: 100%;
-            max-width: 400px;
-            padding: 2rem;
-        }
-        .auth-form {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-            text-align: center;
-        }
-        h2 {
-            color: #f8fafc;
-            margin-bottom: 25px;
-            font-size: 1.75rem;
-            font-weight: 600;
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        input[type="text"],
-        input[type="email"],
-        input[type="password"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #475569;
-            border-radius: 8px;
-            background: #1e293b;
-            color: #f8fafc;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-        input[type="email"]:focus,
-        input[type="password"]:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
-        }
-        input::placeholder {
-            color: #94a3b8;
-        }
-        button {
-            padding: 12px;
-            background: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: background 0.3s, transform 0.1s;
-        }
-        button:hover {
-            background: #2563eb;
-        }
-        button:active {
-            transform: scale(0.99);
-        }
-        .message {
-            margin-top: 20px;
-            padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-        .message.success {
-            background-color: #16a34a; /* Groen */
-            color: white;
-        }
-        .message.error {
-            background-color: #dc2626; /* Rood */
-            color: white;
-        }
-        .form-switch {
-            margin-top: 25px;
-            color: #94a3b8;
-            font-size: 0.9rem;
-        }
-        .form-switch a {
-            color: #3b82f6;
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.3s;
-        }
-        .form-switch a:hover {
-            color: #60a5fa;
-            text-decoration: underline;
-        }
-    </style>
-</head>
-<body>
+
+<script>document.addEventListener('DOMContentLoaded', function(){ document.body.classList.add('auth-bg'); });</script>
+
     <div class="auth-container">
         <div class="auth-form">
             <h2>Aanmelden</h2>
@@ -267,5 +155,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
     </div>
-</body>
-</html>
