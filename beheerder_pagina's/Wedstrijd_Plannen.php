@@ -51,10 +51,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['plan_wedstrijd'])) {
     <title>Wedstrijden Plannen</title>
     <link rel="stylesheet" href="../css/style.css">
     <style>
-        .topbar { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:#f3f4f6; }
-        .topbar .nav { display:flex; gap:12px; align-items:center; }
-        .logout-button { background:#e11d48; color:#fff; padding:6px 10px; border-radius:6px; text-decoration:none; font-weight:600; }
-        .logout-button:hover { background:#be123c; }
         .container { padding:20px; max-width:1000px; margin:0 auto; }
         .container h1 { color:#1e293b; margin-bottom:15px; }
         .container h2 { color:#1e293b; margin-top:30px; margin-bottom:15px; border-bottom:2px solid #e2e8f0; padding-bottom:10px; }
@@ -75,17 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['plan_wedstrijd'])) {
     </style>
 </head>
 <body>
-    <div class="topbar">
-        <div class="nav">
-            <a href="dashboard.php">Dashboard</a>
-            <a href="Wedstrijd_Plannen.php"><strong>Wedstrijdplanning</strong></a>
-            <a href="dashboard.php">Klassement</a>
-        </div>
-        <div>
-            <a href="../logout.php" class="logout-button">Uitloggen</a>
-        </div>
-    </div>
-
+    <?php include 'beheer_header.php'; ?>
     <div class="container">
         <h1>Wedstrijd Plannen</h1>
         

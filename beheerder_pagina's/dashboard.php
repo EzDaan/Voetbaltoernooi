@@ -34,10 +34,6 @@ $klassement = getKlassement();
     <title>Beheerder Dashboard</title>
     <link rel="stylesheet" href="../css/style.css">
     <style>
-        .topbar { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:#f3f4f6; }
-        .topbar .nav { display:flex; gap:12px; align-items:center; }
-        .logout-button { background:#e11d48; color:#fff; padding:6px 10px; border-radius:6px; text-decoration:none; font-weight:600; }
-        .logout-button:hover { background:#be123c; }
         .dashboard { padding:20px; max-width:1200px; margin:0 auto; }
         .dashboard h1 { color:#1e293b; margin-bottom:10px; }
         .dashboard p { color:#64748b; margin-bottom:20px; }
@@ -57,17 +53,7 @@ $klassement = getKlassement();
     </style>
 </head>
 <body>
-    <div class="topbar">
-        <div class="nav">
-            <a href="dashboard.php"><strong>Dashboard</strong></a>
-            <a href="Wedstrijd_Plannen.php">Wedstrijdplanning</a>
-            <a href="#klassement">Klassement</a>
-        </div>
-        <div>
-            <a href="../logout.php" class="logout-button">Uitloggen</a>
-        </div>
-    </div>
-
+    <?php include 'beheer_header.php'; ?>
     <div class="dashboard">
         <h1>Beheerder Dashboard</h1>
         <p>Welkom <?php echo htmlspecialchars($_SESSION['user_email']); ?></p>
