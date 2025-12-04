@@ -52,8 +52,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-include 'header.php';
 ?>
+
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Wachtwoord vergeten - Voetbaltoernooi</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-bg">
 
 <div class="auth-container">
     <div class="auth-form">
@@ -69,8 +78,10 @@ include 'header.php';
             <button type="submit">Verstuur resetlink</button>
         </form>
 
-        <div class="form-switch" style="margin-top:12px;">
-            <a href="inloggen.php">Terug naar inloggen</a>
+        <div class="form-switch spaced">
+            <a href="index.php">Terug naar inloggen</a>
         </div>
     </div>
 </div>
+</body>
+</html>

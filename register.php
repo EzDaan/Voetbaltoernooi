@@ -124,10 +124,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-include 'header.php';
 ?>
 
-<script>document.addEventListener('DOMContentLoaded', function(){ document.body.classList.add('auth-bg'); });</script>
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Aanmelden - Voetbaltoernooi</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-bg">
 
     <div class="auth-container">
         <div class="auth-form">
@@ -155,3 +162,5 @@ include 'header.php';
             </div>
         </div>
     </div>
+</body>
+</html>

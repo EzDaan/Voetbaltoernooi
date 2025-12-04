@@ -66,9 +66,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-<?php include 'header.php'; ?>
+?>
 
-<script>document.addEventListener('DOMContentLoaded', function(){ document.body.classList.add('auth-bg'); });</script>
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Reset wachtwoord - Voetbaltoernooi</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
 
 <div class="card">
     <h2>Reset wachtwoord</h2>
@@ -87,3 +95,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p><a href="index.php">Inloggen</a></p>
     <?php endif; ?>
 </div>
+</body>
+</html>
