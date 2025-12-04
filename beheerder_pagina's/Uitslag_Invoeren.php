@@ -3,37 +3,37 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require_once '../functions.php';
-
+ 
 // Controleer of gebruiker is ingelogd en admin is
 if (!isLoggedIn()) {
     header('Location: ../index.php');
     exit();
 }
-
+ 
 // Zorg ervoor dat ROLE_ADMIN is gedefinieerd
 if (!defined('ROLE_ADMIN')) {
     define('ROLE_ADMIN', 'admin');
 }
-
+ 
 // Controleer of gebruiker admin is
 if ($_SESSION['user_role'] !== ROLE_ADMIN) {
     header('Location: ../Team_inschrijven.php');
     exit();
 }
-
+ 
 $feedback = '';
 // Haal wedstrijden op die gepland zijn
 $openWedstrijden = getWedstrijden('Gepland');
-
+ 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uitslag_toevoegen'])) {
     $wedstrijdId = isset($_POST['wedstrijd_id']) ? (int)$_POST['wedstrijd_id'] : 0;
     $scoreThuis = isset($_POST['score_thuis']) ? (int)$_POST['score_thuis'] : null;
     $scoreUit = isset($_POST['score_uit']) ? (int)$_POST['score_uit'] : null;
-
+ 
     if ($wedstrijdId <= 0 || $scoreThuis === null || $scoreUit === null) {
         $feedback = 'Fout: controleer geselecteerde wedstrijd en scores.';
     } else {
-        // Zoek wedstrijd (type-veilig vergelijken)
+        // Zoek wedstrijd (type-veilig vergelijken.)
         $found = null;
         foreach ($openWedstrijden as $w) {
             if ((int)$w['WedstrijdID'] === $wedstrijdId) {
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uitslag_toevoegen']))
                 break;
             }
         }
-
+ 
         if ($found) {
             $ok = voerUitslagIn($wedstrijdId, $scoreThuis, $scoreUit, (int)$found['TeamThuisID'], (int)$found['TeamUitID']);
             if ($ok) {
@@ -88,13 +88,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uitslag_toevoegen']))
     <?php include 'beheer_header.php'; ?>
     <div class="container">
         <h1>Uitslagen Invoeren</h1>
-        
+       
         <?php if (!empty($feedback)): ?>
             <div class="feedback <?php echo strpos($feedback, 'Fout') !== false ? 'error' : 'success'; ?>">
                 <?php echo htmlspecialchars($feedback); ?>
             </div>
         <?php endif; ?>
-
+ 
         <form method="POST" style="background:#f8fafc; padding:20px; border-radius:8px; border:1px solid #e2e8f0;">
             <div class="form-group">
                 <label for="wedstrijd_id">Wedstrijd *</label>
@@ -105,22 +105,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uitslag_toevoegen']))
                     <?php endforeach; ?>
                 </select>
             </div>
-
+ 
             <div class="form-group">
                 <label for="score_thuis">Score Thuis *</label>
                 <input type="number" name="score_thuis" id="score_thuis" placeholder="Bijv. 2" required min="0">
             </div>
-
+ 
             <div class="form-group">
                 <label for="score_uit">Score Uit *</label>
                 <input type="number" name="score_uit" id="score_uit" placeholder="Bijv. 1" required min="0">
             </div>
-
+ 
             <div class="button-group">
                 <button type="submit" name="uitslag_toevoegen">Uitslag Toevoegen</button>
             </div>
         </form>
-
+ 
         <h2>Nog Te Spelen Wedstrijden</h2>
         <?php if (!empty($openWedstrijden)): ?>
         <table>

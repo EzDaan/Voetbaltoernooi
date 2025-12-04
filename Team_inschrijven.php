@@ -116,34 +116,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registreer'])) {
 }
 ?>
 
-<h1>Team inschrijven</h1>
-<p><?php echo $feedback; ?></p>
-<form method="POST">
-    <input type="text" name="teamnaam" placeholder="Teamnaam" required>
+<div class="page">
+    <h1 style="text-align:center;">Team inschrijven</h1>
+    <?php if (!empty($feedback)): ?>
+        <div class="message <?php echo (strpos($feedback, 'Fout') === 0) ? 'error' : 'success'; ?> spaced"><?php echo htmlspecialchars($feedback); ?></div>
+    <?php endif; ?>
 
-    <div id="spelers-container">
-        <!-- Eén initiële speler-rij -->
-        <div class="speler-row">
-            <input type="text" name="voornaam[]" placeholder="Voornaam" required value="<?php echo htmlspecialchars($prefill['Voornaam'] ?? ''); ?>">
-            <input type="text" name="achternaam[]" placeholder="Achternaam" value="<?php echo htmlspecialchars($prefill['Achternaam'] ?? ''); ?>">
-            <input type="tel" name="telefoonnummer[]" placeholder="Telefoonnummer" value="<?php echo htmlspecialchars($prefill['Telefoonnummer'] ?? ''); ?>">
-            <input type="email" name="email[]" placeholder="E-mail" required value="<?php echo htmlspecialchars($prefill['Email'] ?? ''); ?>">
-            <button type="button" class="remove-player" onclick="removePlayer(this)">Verwijder</button>
+    <form method="POST" class="form-card">
+        <div class="form-row">
+            <div class="col"><input type="text" name="teamnaam" placeholder="Teamnaam" required></div>
         </div>
-    </div>
 
-    <p>
-        <button type="button" id="add-player">Voeg speler toe</button>
-    </p>
+        <div id="spelers-container">
+            <!-- Eén initiële speler-rij -->
+            <div class="speler-row form-row">
+                <input type="text" name="voornaam[]" placeholder="Voornaam" required value="<?php echo htmlspecialchars($prefill['Voornaam'] ?? ''); ?>">
+                <input type="text" name="achternaam[]" placeholder="Achternaam" value="<?php echo htmlspecialchars($prefill['Achternaam'] ?? ''); ?>">
+            </div>
+            <div class="speler-row form-row">
+                <input type="tel" name="telefoonnummer[]" placeholder="Telefoonnummer" value="<?php echo htmlspecialchars($prefill['Telefoonnummer'] ?? ''); ?>">
+                <input type="email" name="email[]" placeholder="E-mail" required value="<?php echo htmlspecialchars($prefill['Email'] ?? ''); ?>">
+                <button type="button" class="remove-player btn secondary" onclick="removePlayer(this)">Verwijder</button>
+            </div>
+        </div>
 
-    <button name="registreer">Team en spelers inschrijven</button>
+        <div class="form-row">
+            <button type="button" id="add-player" class="btn ghost">Voeg speler toe</button>
+            <button name="registreer" class="btn">Team inschrijven</button>
+        </div>
 
-    <!-- Contactpersoon velden (voor backend / notificaties) -->
-    <input type="hidden" name="contact_voornaam" value="<?php echo htmlspecialchars($prefill['Voornaam'] ?? ''); ?>">
-    <input type="hidden" name="contact_achternaam" value="<?php echo htmlspecialchars($prefill['Achternaam'] ?? ''); ?>">
-    <input type="hidden" name="contact_telefoon" value="<?php echo htmlspecialchars($prefill['Telefoonnummer'] ?? ''); ?>">
-    <input type="hidden" name="contact_email" value="<?php echo htmlspecialchars($prefill['Email'] ?? ''); ?>">
-</form>
+        <!-- Contactpersoon velden (voor backend / notificaties) -->
+        <input type="hidden" name="contact_voornaam" value="<?php echo htmlspecialchars($prefill['Voornaam'] ?? ''); ?>">
+        <input type="hidden" name="contact_achternaam" value="<?php echo htmlspecialchars($prefill['Achternaam'] ?? ''); ?>">
+        <input type="hidden" name="contact_telefoon" value="<?php echo htmlspecialchars($prefill['Telefoonnummer'] ?? ''); ?>">
+        <input type="hidden" name="contact_email" value="<?php echo htmlspecialchars($prefill['Email'] ?? ''); ?>">
+    </form>
+</div>
 
 <script>
 // Eenvoudige JS om meerdere spelers toe te voegen/verwijderen

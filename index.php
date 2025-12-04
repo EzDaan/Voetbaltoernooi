@@ -109,12 +109,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-include 'header.php';
 ?>
 
-<script>/* small helper to add auth background class to body */
-document.addEventListener('DOMContentLoaded', function(){ document.body.classList.add('auth-bg'); });
-</script>
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Inloggen - Voetbaltoernooi</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-bg">
 
     <div class="auth-container">
         <div class="auth-form">
@@ -130,13 +135,17 @@ document.addEventListener('DOMContentLoaded', function(){ document.body.classLis
                 <input type="email" name="email" placeholder="E-mailadres" 
                        value="<?php echo isset($_COOKIE['user_email']) ? htmlspecialchars($_COOKIE['user_email']) : ''; ?>" required>
                 <input type="password" name="password" placeholder="Wachtwoord" required>
-                
-                <label>
-                    <input type="checkbox" name="remember_me" id="remember-me" 
-                           <?php echo isset($_COOKIE['user_email']) ? 'checked' : ''; ?>> Onthoud mij
-                </label>
-                
-                <button type="submit">Inloggen</button>
+
+                <div class="form-actions remember-row">
+                    <label class="remember">
+                        <input type="checkbox" name="remember_me" id="remember-me" <?php echo isset($_COOKIE['user_email']) ? 'checked' : ''; ?>>
+                        <span>Onthoud mij</span>
+                    </label>
+                </div>
+
+                <div class="submit-row">
+                    <button type="submit">Inloggen</button>
+                </div>
             </form>
             
             <a href="forgot_password.php" class="reset-pass">Wachtwoord vergeten?</a>
